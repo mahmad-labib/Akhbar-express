@@ -1,28 +1,31 @@
 const express = require('express')
-var router = express.Router();
+const conf = require('./conf/default')
 const path = require('path')
+global.app = express()
 var bodyParser = require('body-parser')
 
-const app = express()
 
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
 
-// parse application/json
-app.use(bodyParser.json())
+//import JWT globaly
+global.jwt = require('jsonwebtoken');
+global.jwt_secret = require('./conf/jwt')
+require(path.join(__dirname, "/middleware/auth.js"))
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-  })
 
-app.use('/user', router);
 
-require(path.join(__dirname, "/api/user.js"))(app);
-require(path.join(__dirname, "/conf/passport.js"))(app);
+global.app.use(bodyParser.urlencoded({
+    extended: true
+}));
+global.app.use(bodyParser.json());
+
+//middleware
+
+
+require(path.join(__dirname, "/api/user.js"));
 require(path.join(__dirname, "/mysql"));
 
 
-const port = 3030
+const port = conf.port
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
