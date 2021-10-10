@@ -3,8 +3,7 @@ const conf = require('./conf/default')
 const path = require('path')
 global.app = express()
 var bodyParser = require('body-parser')
-
-
+require(path.join(__dirname, "./conf/error.js"))
 
 //import JWT globaly
 global.jwt = require('jsonwebtoken');
@@ -23,7 +22,6 @@ global.app.use(bodyParser.json());
 
 require(path.join(__dirname, "/api/user.js"));
 require(path.join(__dirname, "/mysql"));
-
 
 const port = conf.port
 
