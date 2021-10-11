@@ -6,14 +6,12 @@ global.app.use(function (req, res, next) {
             req.user = bearer;
             next();
         } catch (error) {
-            console.log(error)
             next()
         }
     } else {
         next();
     }
 });
-
 
 
 loginRequired = function loginRequired(req, res, next) {
@@ -36,5 +34,36 @@ alreadylogin = function alreadylogin(req, res, next) {
         })
     } else {
         return next();
+    }
+}
+
+
+// roleGate = async function roleGate(req, res, next, gateRole) {
+//     var userRoles = req.user.roles;
+//     if (roles) {
+//         var roleState = await checkRole(userRoles, gateRole);
+//         if (roleState) {
+//             next()
+//         } else {
+//             res.json(new global.Forbidden())
+//         }
+//     }
+//     res.json(new global.Forbidden())
+// }
+
+function checkRole(userRoles, gateRole) {
+    var valid = userRoles.find(o => o.name === gateRole);
+    return valid;
+}
+
+global.grantAccess = function grantAccess(gateRole) {
+    return async (req, res, next) => {
+        var userRoles = req.user.roles
+        const permission = await checkRole(userRoles, gateRole);
+        if (permission) {
+            next();
+        } else {
+            res.json(new global.Forbidden())
+        }
     }
 }

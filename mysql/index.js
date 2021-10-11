@@ -38,16 +38,7 @@ const Section = sectionModel(sequelize, Sequelize);
 //   ------Pivot Tables------
 
 //   Users_Roles
-const users_roles = sequelize.define('users_roles', {
-    user_id: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    role_id: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-}, {
+const users_roles = sequelize.define('users_roles', {}, {
     modelName: 'users_roles'
 });
 
@@ -189,4 +180,4 @@ try {
     console.log(err);
 }
 
-module.exports = User, Role
+module.exports = {User, Role, users_roles}

@@ -1,29 +1,25 @@
-const User = require('../mysql');
+const {
+    User,
+    Role,
+    users_roles
+} = require('../mysql');
 const crypto = require('crypto');
 
 
 global.app.get('/user', global.loginRequired, async function (req, res) {
     try {
-        user = await User.findOne({
-            where: {
-                id: req.user.id
-            }
-        })
-        res.json({
-            user
-        })
+        // var user = await User.findOne({
+        //     where: {
+        //         id: req.user.id
+        //     }
+        // })
+        res.json(new global.sendData(200, req.user))
     } catch (error) {
-        // console.log('hi');
-    //     var data = {
-    //         error: true,
-    //         msg: 'somthing went wrong',
-    //         code: '409'
-    //     }
-    //     res.json(new global.regularError(data))
+        res.json(new global.regularError(409, 'somthing went wrong'))
     }
 })
 
-global.app.post('/user/login', global.alreadylogin, async function (req, res) {
+global.app.post('/user/login', async function (req, res) {
     var {
         email,
         pass
@@ -33,15 +29,20 @@ global.app.post('/user/login', global.alreadylogin, async function (req, res) {
         where: {
             email,
             password: hash
-        }
+        },
+        attributes: ['id', 'name'],
+        include: [{
+            model: Role,
+            attributes: ['id', 'name'],
+        }],
     });
     if (user === null) {
         return res.json('not found');
     } else {
         var api_token = await global.jwt.sign({
             email,
-            hash,
-            id: user.id
+            id: user.id,
+            roles: user.roles
         }, global.jwt_secret);
 
         res.json({
@@ -58,20 +59,16 @@ global.app.post('/user/signup', async function (req, res) {
             email,
             name
         } = req.body;
-        user = await User.findOne({
+        var findUser = await User.findOne({
             where: {
                 email: email
             }
         })
-        // if (user !== null) {
-        //     var data = {
-        //         code: 409,
-        //         msg: 'user already exist'
-        //     }
-        //     res.json(new global.regularError(data));
-        // }
+        if (findUser !== null) {
+            res.json(new global.regularError(409, 'user already exist'));
+        }
         if (pass.toString() === confPass.toString()) {
-            hash = crypto.pbkdf2Sync(pass, 'salt', 100, 24, 'sha512').toString('hex');
+            var hash = crypto.pbkdf2Sync(pass, 'salt', 100, 24, 'sha512').toString('hex');
         }
         const user = await User.create({
             name,
@@ -80,17 +77,14 @@ global.app.post('/user/signup', async function (req, res) {
         });
         res.send(user);
     } catch (error) {
-        res.send(error)
+        res.json(new global.regularError());
     }
 })
 
 global.app.post('/user/logout', async function (req, res) {
     var token = req.header('jwt_token');
     if (token == ('null' || undefined)) {
-        res.json({
-            msg: 'already loged out',
-            code: '505'
-        })
+        res.json(new global.regularError(505, 'already loged out'))
     }
     res.header('token', {}).json({
         msg: 'signed out',
