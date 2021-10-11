@@ -58,6 +58,9 @@ function checkRole(userRoles, gateRole) {
 
 global.grantAccess = function grantAccess(gateRole) {
     return async (req, res, next) => {
+        if (!req.user) {
+            res.json(new global.Forbidden())
+        }
         var userRoles = req.user.roles
         const permission = await checkRole(userRoles, gateRole);
         if (permission) {

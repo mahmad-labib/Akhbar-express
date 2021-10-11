@@ -1,5 +1,6 @@
 const {
-    User
+    User,
+    Role
 } = require('../mysql');
 const {
     Op
@@ -38,17 +39,78 @@ global.app.get('/admin/users', global.grantAccess('admin'), async function (req,
 
 global.app.get('/admin/users/search', global.grantAccess('admin'), async function (req, res) {
     try {
-        var {limit, page, name} = req.body
+        var {
+            limit,
+            page,
+            name,
+            email
+        } = req.body
         var user = await User.findAll({
             where: {
                 name: {
                     [Op.substring]: name
+                },
+                email: {
+                    [Op.substring]: email
                 }
             },
+            attributes: {
+                exclude: ['createdAt', 'updatedAt', 'password']
+            },
+            include: [{
+                model: Role,
+                attributes: ['id', 'name'],
+            }],
             limit: limit,
-            offset: page
+            offset: page,
         })
         res.json(new global.sendData('202', user))
+    } catch (error) {
+        res.json(new global.regularError())
+    }
+})
+
+global.app.get('/admin/user/:id', global.grantAccess('admin'), async function (req, res) {
+    try {
+        var id = req.params.id;
+        var user = await User.findOne({
+            where: {
+                id
+            },
+            attributes: {
+                exclude: ['createdAt', 'updatedAt', 'password']
+            }
+        })
+        res.json(new global.sendData('202', user));
+    } catch (error) {
+        res.json(new global.regularError(404, 'user not found'))
+    }
+})
+
+global.app.post('/admin/user', global.grantAccess('admin'), async function (req, res) {
+    try {
+        var {
+            id,
+            name,
+            email
+        } = req.body;
+        var user = await User.findOne({
+            where: {
+                id
+            }
+        })
+        if (!user) {
+            res.josn(new global.regularError(404, 'user not found'))
+        }
+        var query = await User.update({
+            name,
+            email
+        }, {
+            where: {
+                id
+            }
+        })
+        res.json(new global.sendSuccessMsg())
     } catch (error) {
         res.json(new global.regularError())
     }

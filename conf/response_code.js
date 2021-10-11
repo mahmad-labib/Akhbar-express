@@ -39,3 +39,11 @@ global.sendData = class extends Success {
         this.data = data
     }
 }
+
+global.sendSuccessMsg = class extends Success {
+    constructor() {
+        super()
+        this.code = 200
+        this.data = 'success'
+    }
+}
