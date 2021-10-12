@@ -21,7 +21,8 @@ global.app.use(bodyParser.json());
 
 
 require(path.join(__dirname, "/api/user.js"));
-require(path.join(__dirname, "/api/admin.js"));
+require(path.join(__dirname, "/api/adminController/users.js"));
+require(path.join(__dirname, "/api/adminController/roles.js"));
 require(path.join(__dirname, "/mysql"));
 
 const port = conf.port

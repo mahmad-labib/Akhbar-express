@@ -7,16 +7,17 @@ const crypto = require('crypto');
 
 
 global.app.get('/user', global.loginRequired, async function (req, res) {
-    try {
-        // var user = await User.findOne({
-        //     where: {
-        //         id: req.user.id
-        //     }
-        // })
-        res.json(new global.sendData(200, req.user))
-    } catch (error) {
-        res.json(new global.regularError(409, 'somthing went wrong'))
-    }
+    // try {
+        var user = await User.findOne({
+            where: {
+                this: 1000
+            }
+        })
+        // throw new Error('this is my err')
+    //     res.json(new global.sendData(200, req.user))
+    // } catch (error) {
+    //     res.json(new global.regularError(409, 'somthing went wrong'))
+    // }
 })
 
 global.app.post('/user/login', async function (req, res) {

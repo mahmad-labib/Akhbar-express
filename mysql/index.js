@@ -13,9 +13,9 @@ const conf = require('../conf/default');
 const sequelize = new Sequelize(conf.database.DATABASE,
     conf.database.USERNAME,
     conf.database.PASSWORD, {
-    host: conf.database.HOST,
-    dialect: 'mysql'
-});
+        host: conf.database.HOST,
+        dialect: 'mysql'
+    });
 
 try {
     sequelize.authenticate();
@@ -38,90 +38,34 @@ const Section = sectionModel(sequelize, Sequelize);
 //   ------Pivot Tables------
 
 //   Users_Roles
-const users_roles = sequelize.define('users_roles', {}, {
-    modelName: 'users_roles'
-});
+const users_roles = sequelize.define('users_roles');
 
 // Users_Sections
-const users_sections = sequelize.define('users_sections', {
-    user_id: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    section_id: {
-        type: Sequelize.STRING,
-        allowNull: false
-    }
-})
+const users_sections = sequelize.define('users_sections')
 
 //Users_Articles
-const users_articles = sequelize.define('users_articles', {
-    user_id: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    article_id: {
-        type: Sequelize.STRING,
-        allowNull: false
-    }
-})
+const users_articles = sequelize.define('users_articles')
 
 // Users_Pending_Articles
-const users_pending_articles = sequelize.define('users_pending_articles', {
-    user_id: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    pArticle_id: {
-        type: Sequelize.STRING,
-        allowNull: false
-    }
-})
+const users_pending_articles = sequelize.define('users_pending_articles')
 
 // Articles_Sections
-const articles_sections = sequelize.define('articles_sections', {
-    article_id: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    section_id: {
-        type: Sequelize.STRING,
-        allowNull: false
-    }
-})
+const articles_sections = sequelize.define('articles_sections')
 
 // Articles_Images
-const articles_images = sequelize.define('articles_images', {
-    article_id: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    image_id: {
-        type: Sequelize.STRING,
-        allowNull: false
-    }
-})
+const articles_images = sequelize.define('articles_images')
 
 // Pending_Articles_Images
-const p_articles_images = sequelize.define('p_articles_images', {
-    article_id: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    image_id: {
-        type: Sequelize.STRING,
-        allowNull: false
-    }
-})
+const p_articles_images = sequelize.define('p_articles_images')
 
 //  ------ Relations ------
 
 // Users_Roles Relation
 User.belongsToMany(Role, {
-    through: users_roles
+    through: users_roles,
 });
 Role.belongsToMany(User, {
-    through: users_roles
+    through: users_roles,
 });
 
 // Users_Sections Relation
@@ -180,4 +124,9 @@ try {
     console.log(err);
 }
 
-module.exports = {User, Role, users_roles}
+module.exports = {
+    User,
+    Role,
+    users_roles,
+    Section
+}

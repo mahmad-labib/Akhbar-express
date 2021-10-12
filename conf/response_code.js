@@ -19,8 +19,8 @@ class Success {
 global.regularError = class extends Error {
     constructor(code, msg) {
         super()
-        this.msg = msg
-        this.code = code
+        this.msg = msg || 'somthing went wrong'
+        this.code = code || 404
     }
 }
 
